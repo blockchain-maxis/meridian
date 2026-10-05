@@ -47,11 +47,11 @@ export function DepositTab({
   availableBalance,
 }: DepositTabProps) {
   const { t, i18n } = useTranslation();
-  // An empty field is only reported once the user has interacted with it, so
-  // the form doesn't open with an error showing.
-  const [touched, setTouched] = useState(false);
+  // True only when the user emptied the field themselves. A completed deposit
+  // also clears it, and that must not surface the required message.
+  const [clearedByUser, setClearedByUser] = useState(false);
   const error = validateDepositAmount(amount, availableBalance);
-  const showError = error !== null && (touched || amount !== "");
+  const showError = error !== null && (amount !== "" || clearedByUser);
 
   return (
     <div className="space-y-4">
@@ -71,7 +71,7 @@ export function DepositTab({
           currency="USDC"
           value={amount}
           onChange={(v) => {
-            setTouched(true);
+            setClearedByUser(v === "");
             onAmountChange(v);
           }}
           onKeyDown={onAmountKeyDown}

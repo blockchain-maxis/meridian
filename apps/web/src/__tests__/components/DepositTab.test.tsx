@@ -51,6 +51,21 @@ function renderDepositTab(
   );
 }
 
+function depositTab(amount: string) {
+  return (
+    <DepositTab
+      amount={amount}
+      onAmountChange={onAmountChange}
+      onAmountKeyDown={onAmountKeyDown}
+      bestVault={VAULT}
+      position={undefined}
+      hasPosition={false}
+      isDepositing={false}
+      onSubmit={onSubmit}
+    />
+  );
+}
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
@@ -143,6 +158,17 @@ describe("DepositTab", () => {
         />
       );
       expect(error()?.textContent).toBe("vaultPanel.validation.required");
+    });
+
+    it("hides the message when the parent clears the field after a deposit", () => {
+      const { rerender } = render(depositTab(""));
+      fireEvent.change(screen.getByPlaceholderText("0.00"), {
+        target: { value: "25" },
+      });
+      rerender(depositTab("25"));
+      rerender(depositTab(""));
+
+      expect(error()).toBeNull();
     });
 
     it("shows a non-positive message for zero and negative amounts", () => {
